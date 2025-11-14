@@ -17,7 +17,9 @@
   .hint{color:#666;margin-bottom:14px}
   .small{color:#888;font-size:12px}
 
-  .modebar{margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .header-fixed{position:sticky;top:0;background:var(--bg);z-index:100;padding:12px 0;border-bottom:2px solid var(--line);margin-bottom:16px}
+  .manual-controls{position:sticky;top:80px;background:var(--bg);z-index:99;padding:16px 0 20px;border-bottom:2px solid var(--line);margin-bottom:16px}
+  .modebar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .btn{padding:8px 14px;border:1px solid #999;background:#fff;cursor:pointer;border-radius:6px}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn:hover{background:#f0f0f0}
@@ -78,16 +80,77 @@
     white-space:pre; background:#111; color:#e5e5e5;
     padding:12px; border-radius:8px; min-height:220px;
   }
+
+  /* 모바일 반응형 */
+  @media (max-width: 768px) {
+    body{margin:12px;}
+    .header-fixed{padding:8px 0;}
+    .manual-controls{top:70px;padding:12px 0 16px;}
+    h2{font-size:18px;}
+    .hint{font-size:11px;}
+
+    .modebar{gap:6px;}
+    .btn{padding:6px 10px;font-size:13px;}
+
+    .row{flex-direction:column;align-items:flex-start;gap:6px;}
+    .row label{width:100%;}
+
+    .row-spirit{
+      grid-template-columns:1fr;
+      gap:6px;
+    }
+    .row-spirit strong{text-align:left;padding-right:0;margin-bottom:4px;}
+    .row-spirit input{width:100%;}
+
+    input[type="number"],select,input[type="text"]{width:100% !important;box-sizing:border-box;}
+
+    .toolbar{gap:6px;}
+    .toolbar .btn{font-size:11px;padding:6px 8px;}
+
+    .acc-list{max-height:180px;font-size:13px;}
+
+    fieldset{padding:10px;}
+    legend{font-size:14px;}
+
+    .sheet{
+      min-width:unset;
+      width:100%;
+      padding:10px;
+      overflow-x:auto;
+    }
+    .sheet .name{font-size:16px;}
+
+    .grid{
+      grid-template-columns:80px repeat(3, 1fr);
+      font-size:10px;
+      min-width:320px;
+    }
+    .cell{padding:4px 5px;font-size:10px;}
+    .cell.h{font-size:9px;padding:3px 4px;}
+    .cell.big{font-size:14px;}
+    .cell.sum{font-size:11px;}
+    .cell.section{grid-column:1/5 !important;}
+
+    .results-row{flex-direction:column;gap:12px;}
+
+    #pendant_auto_row{flex-direction:column;align-items:flex-start;}
+    #pendant_stats_row{flex-direction:column;align-items:flex-start;}
+    #pendant_manual{flex-direction:column;align-items:flex-start;gap:8px;}
+
+    pre.result{font-size:11px;padding:10px;min-height:150px;overflow-x:auto;}
+  }
 </style>
 </head>
 
 <body>
-  <h2>드래곤 비벨/이벨 통합 계산기</h2>
-  <div class="modebar">
-    <button class="btn primary" id="btnAuto">자동 계산기</button>
-    <button class="btn" id="btnManual">수동 계산기</button>
+  <div class="header-fixed">
+    <h2>드래곤 비벨/이벨 통합 계산기</h2>
+    <div class="modebar">
+      <button class="btn primary" id="btnAuto">자동 계산기</button>
+      <button class="btn" id="btnManual">수동 계산기</button>
+    </div>
+    <div class="hint small">모든 입력은 <b>HP / ATK / DEF</b> 순서입니다. · made by 헬릭스</div>
   </div>
-  <div class="hint small">모든 입력은 <b>HP / ATK / DEF</b> 순서입니다. · made by 헬릭스</div>
 
   <!-- =========================
        자동 계산기
@@ -190,7 +253,7 @@
 
     <!-- 정령/버프/디버프 -->
     <fieldset>
-      <legend>정령 / 버프 / 디버프</legend>
+      <legend>정령 / 버프 / 디버프 <button class="btn" type="button" onclick="resetSpiritBuffs()" style="margin-left:8px;font-size:12px;padding:4px 10px;">전체 초기화</button></legend>
       <div style="font-weight:bold; color:black; margin-bottom:6px;">(HP / ATK / DEF)</div>
 
       <div class="row-spirit"><strong>정령 + (플옵)</strong><input id="sf_hp" type="number" value="0"><input id="sf_atk" type="number" value="0"><input id="sf_df" type="number" value="0"></div>
@@ -219,20 +282,21 @@
        수동 계산기
        ========================= -->
   <div id="manualCalc" class="calc-container">
-    <h3>수동 계산기 (1~3마리 비교)</h3>
-
     <!-- 전역 컨트롤 -->
-    <div class="row">
-      <label>드래곤 수
-        <select id="dragon_count">
-          <option value="1">1마리</option>
-          <option value="2">2마리</option>
-          <option value="3" selected>3마리</option>
-        </select>
-      </label>
-      <button class="btn" id="applyCountBtn">적용</button>
-      <button class="btn primary" onclick="manualCalcAll()">수동 계산</button>
-      <button class="btn" onclick="savePngAll()">결과를 PNG로 저장</button>
+    <div class="manual-controls">
+      <h3 style="margin:0 0 8px">수동 계산기 (1~3마리 비교)</h3>
+      <div class="row">
+        <label>드래곤 수
+          <select id="dragon_count">
+            <option value="1">1마리</option>
+            <option value="2">2마리</option>
+            <option value="3" selected>3마리</option>
+          </select>
+        </label>
+        <button class="btn" id="applyCountBtn">적용</button>
+        <button class="btn primary" onclick="manualCalcAll()">수동 계산</button>
+        <button class="btn" onclick="savePngAll()">결과를 PNG로 저장</button>
+      </div>
     </div>
 
     <!-- 드래곤별 입력폼 (세로 정렬) -->
@@ -276,6 +340,13 @@
     return [f, eVal(f), bVal(f)];
   }
   function val(id){ return Number(document.getElementById(id)?.value||0); }
+
+  function resetSpiritBuffs(){
+    ['sf_hp','sf_atk','sf_df','sp_hp','sp_atk','sp_df','se_hp','se_atk','se_df','bf_hp','bf_atk','bf_df','db_hp','db_atk','db_df'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.value=0;
+    });
+  }
 
   /* =========================
      자동 계산기 데이터/렌더
@@ -700,7 +771,7 @@ function renderOneResult(idx){
       <div class="cell sum">공격력</div><div class="cell big" id="d${idx}_c_fin_atk">-</div>
       <div class="cell sum">방어력</div><div class="cell big" id="d${idx}_c_fin_df">-</div>
 
-      <div class="cell section center" style="grid-column:1/5">이벨/비벨</div>
+      <div class="cell section center" style="grid-column:1/5">지표</div>
       <div class="cell">E-Value</div><div class="cell big" id="d${idx}_c_eval" style="grid-column:2/5">-</div>
       <div class="cell">B-Value</div><div class="cell big" id="d${idx}_c_bval" style="grid-column:2/5">-</div>
     </div>
